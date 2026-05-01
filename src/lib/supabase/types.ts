@@ -34,6 +34,7 @@ export type PodcastRow = {
   rumble_url: string | null;
   telegram_url: string | null;
   fountain_url: string | null;
+  spotify_url: string | null;
   podcastindex_id: string | null;
   value4value_enabled: boolean;
   created_at: string;
