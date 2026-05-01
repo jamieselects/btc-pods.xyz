@@ -64,9 +64,20 @@ export default async function PodcastDetailPage({ params }: Props) {
                 <Link
                   href={podcast.website_url}
                   target="_blank"
+                  rel="noopener noreferrer"
                   className="hover:text-primary"
                 >
                   Visit site ↗
+                </Link>
+              ) : null}
+              {podcast.spotify_url ? (
+                <Link
+                  href={podcast.spotify_url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="hover:text-primary"
+                >
+                  Spotify ↗
                 </Link>
               ) : null}
             </div>
