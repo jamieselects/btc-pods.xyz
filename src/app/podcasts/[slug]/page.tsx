@@ -57,9 +57,6 @@ export default async function PodcastDetailPage({ params }: Props) {
               {podcast.publishing_frequency ? (
                 <span>📅 {podcast.publishing_frequency}</span>
               ) : null}
-              {podcast.difficulty_level ? (
-                <span>🎓 {podcast.difficulty_level}</span>
-              ) : null}
               {podcast.year_started ? (
                 <span>Since {podcast.year_started}</span>
               ) : null}
