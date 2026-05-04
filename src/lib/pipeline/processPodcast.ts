@@ -137,6 +137,12 @@ async function processEpisode(
     const cleaned = transcript.text.slice(0, TRANSCRIPT_CHAR_CAP);
     const summary = await summarise(cleaned);
 
+    // Whisper returns ground-truth duration; prefer it over the RSS-declared value.
+    const durationSeconds =
+      transcript.source === "whisper"
+        ? Math.round(transcript.durationSeconds)
+        : item.durationSeconds;
+
     const { data: episodeRow, error: episodeError } = await db
       .from("episodes")
       .insert({
@@ -145,7 +151,7 @@ async function processEpisode(
         title: item.title,
         published_at: item.publishedAt.toISOString(),
         audio_url: item.audioUrl,
-        duration_seconds: item.durationSeconds,
+        duration_seconds: durationSeconds,
         transcript: cleaned,
         transcript_source: transcript.source,
       })
@@ -192,13 +198,27 @@ async function processEpisode(
       summary.outputTokens,
     );
     const whisperCostUsd =
-      transcript.source === "whisper" && item.durationSeconds
-        ? estimateWhisperCostUsd(item.durationSeconds)
+      transcript.source === "whisper" && durationSeconds
+        ? estimateWhisperCostUsd(durationSeconds)
         : 0;
     const totalCostUsd = costUsd + whisperCostUsd;
 
     const posthog = getPostHogServer();
     if (posthog) {
+      if (transcript.source === "whisper") {
+        posthog.capture({
+          distinctId: `podcast:${podcast.slug}`,
+          event: "whisper_transcription",
+          properties: {
+            podcast_slug: podcast.slug,
+            podcast_id: podcast.id,
+            episode_id: episodeRow.id,
+            duration_seconds: transcript.durationSeconds,
+            cost_usd: whisperCostUsd,
+            model: "whisper-1",
+          },
+        });
+      }
       posthog.capture({
         distinctId: `podcast:${podcast.slug}`,
         event: "episode_summarised",
@@ -213,7 +233,7 @@ async function processEpisode(
           haiku_cost_usd: costUsd,
           whisper_cost_usd: whisperCostUsd,
           total_cost_usd: totalCostUsd,
-          duration_seconds: item.durationSeconds,
+          duration_seconds: durationSeconds,
         },
       });
       await posthog.flush();
