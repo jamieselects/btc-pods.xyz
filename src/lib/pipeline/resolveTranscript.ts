@@ -1,8 +1,10 @@
+import "server-only";
 import type { RssItem } from "@/lib/pipeline/fetchRss";
+import { transcribeWithWhisper } from "@/lib/pipeline/transcribeWithWhisper";
 
 export type ResolvedTranscript =
-  | { source: "rss"; text: string }
-  | { source: "whisper"; text: string }
+  | { source: "rss"; text: string; durationSeconds: number | null }
+  | { source: "whisper"; text: string; durationSeconds: number }
   | { source: "missing"; reason: string };
 
 const MIN_CHARS = 200;
@@ -21,35 +23,47 @@ export async function resolveTranscript(
   item: RssItem,
 ): Promise<ResolvedTranscript> {
   if (item.transcriptText && item.transcriptText.trim().length >= MIN_CHARS) {
-    return { source: "rss", text: clean(item.transcriptText) };
+    return {
+      source: "rss",
+      text: clean(item.transcriptText),
+      durationSeconds: item.durationSeconds,
+    };
   }
 
   if (item.transcriptUrl) {
     try {
       const text = await fetchTranscriptUrl(item.transcriptUrl);
       if (text && text.length >= MIN_CHARS) {
-        return { source: "rss", text };
+        return { source: "rss", text, durationSeconds: item.durationSeconds };
       }
-      return {
-        source: "missing",
-        reason: `linked transcript too short (${text?.length ?? 0} chars)`,
-      };
+      // Fall through to Whisper if the linked transcript was too thin.
     } catch (err) {
-      return {
-        source: "missing",
-        reason:
-          err instanceof Error
-            ? `transcript fetch failed: ${err.message}`
-            : "transcript fetch failed",
-      };
+      // Same: a broken transcript URL shouldn't block the Whisper fallback.
+      void err;
     }
   }
 
-  // Phase 3 will call Whisper on item.audioUrl here.
-  return {
-    source: "missing",
-    reason: "no RSS transcript; Whisper fallback not enabled until phase 3",
-  };
+  if (!item.audioUrl) {
+    return {
+      source: "missing",
+      reason: "no RSS transcript and no audio URL to send to Whisper",
+    };
+  }
+
+  const whisper = await transcribeWithWhisper({
+    audioUrl: item.audioUrl,
+    durationSeconds: item.durationSeconds,
+  });
+
+  if (whisper.status === "ok") {
+    return {
+      source: "whisper",
+      text: clean(whisper.text),
+      durationSeconds: whisper.durationSeconds,
+    };
+  }
+
+  return { source: "missing", reason: whisper.reason };
 }
 
 async function fetchTranscriptUrl(url: string): Promise<string | null> {

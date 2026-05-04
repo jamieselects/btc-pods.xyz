@@ -1,10 +1,13 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import { DonateButton } from "@/components/DonateButton";
 import { SignOutButton } from "@/components/nav/sign-out-button";
 import { getCurrentUser } from "@/lib/dal";
+import { hasEnv } from "@/lib/env";
 
 export async function SiteHeader() {
   const user = await getCurrentUser();
+  const donationsEnabled = hasEnv("STRIKE_API_KEY");
 
   return (
     <header className="border-b border-border/60 bg-background/60 backdrop-blur">
@@ -20,6 +23,8 @@ export async function SiteHeader() {
           <Button asChild variant="ghost" size="sm">
             <Link href="/podcasts">Podcasts</Link>
           </Button>
+
+          {donationsEnabled ? <DonateButton /> : null}
 
           {user ? (
             <>
