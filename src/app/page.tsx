@@ -1,7 +1,13 @@
 import Link from "next/link";
+import { DonateButton } from "@/components/DonateButton";
+import { getCurrentUser } from "@/lib/dal";
+import { hasEnv } from "@/lib/env";
 import { Button } from "@/components/ui/button";
 
-export default function HomePage() {
+export default async function HomePage() {
+  const user = await getCurrentUser();
+  const donationsEnabled = hasEnv("STRIKE_API_KEY");
+
   return (
     <main className="flex flex-1 flex-col items-center justify-center px-6 py-24">
       <div className="flex max-w-2xl flex-col items-center gap-8 text-center">
@@ -19,13 +25,24 @@ export default function HomePage() {
           <Button asChild size="lg">
             <Link href="/podcasts">Browse podcasts</Link>
           </Button>
-          <Button asChild size="lg" variant="outline">
-            <Link href="/sign-up">Create a free account</Link>
-          </Button>
+          {user ? (
+            donationsEnabled ? (
+              <DonateButton
+                triggerLabel="Pay what you can"
+                size="lg"
+                variant="outline"
+              />
+            ) : (
+              <Button asChild size="lg" variant="outline">
+                <Link href="/dashboard">Dashboard</Link>
+              </Button>
+            )
+          ) : (
+            <Button asChild size="lg" variant="outline">
+              <Link href="/sign-up">Create a free account</Link>
+            </Button>
+          )}
         </div>
-        <p className="text-xs text-muted-foreground">
-          Phase 1 scaffold — sign-in and pipeline ship in phase 2.
-        </p>
       </div>
     </main>
   );

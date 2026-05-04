@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 """
 Generate supabase/migrations/007_feedspot_bitcoin_podcasts.sql from
-uploads/bitcoin_podcasts-0.md (FeedSpot export). Validates RSS URLs and
-blocks feeds already seeded in 002 / 004.
+uploads/bitcoin_podcasts-0.md (FeedSpot export). Validates RSS URLs,
+blocks feeds already seeded in 002 / 004, and fills `description` from
+each show's RSS channel summary when available (otherwise NULL).
 """
 
 from __future__ import annotations
@@ -268,11 +269,48 @@ def sql_escape(s: str) -> str:
     return s.replace("'", "''")
 
 
-def chunk_row(slug: str, name: str, tagline: str | None, rss: str) -> str:
-    desc = (
-        "Featured in FeedSpot's Best Bitcoin Podcasts "
-        "(https://podcast.feedspot.com/bitcoin_podcasts/)."
+def rss_channel_description(feed_url: str) -> str | None:
+    """First meaningful channel summary from RSS / Atom (no extra deps)."""
+    import html as html_module
+    import re
+    import urllib.error
+    import urllib.request
+
+    req = urllib.request.Request(
+        feed_url,
+        headers={"User-Agent": "btc-pod-ingest-feedspot/1"},
     )
+    try:
+        with urllib.request.urlopen(req, timeout=25) as resp:
+            raw = resp.read().decode("utf-8", errors="replace")
+    except (urllib.error.URLError, TimeoutError, OSError):
+        return None
+
+    for pat in (
+        r"<itunes:summary>\s*<!\[CDATA\[(.*?)\]\]>\s*</itunes:summary>",
+        r"<itunes:summary>\s*(.*?)\s*</itunes:summary>",
+        r"<description>\s*<!\[CDATA\[(.*?)\]\]>\s*</description>",
+        r"<description>\s*(.*?)\s*</description>",
+    ):
+        m = re.search(pat, raw, re.DOTALL | re.IGNORECASE)
+        if not m:
+            continue
+        text = m.group(1).strip()
+        text = re.sub(r"<[^>]+>", " ", text)
+        text = html_module.unescape(text)
+        text = re.sub(r"\s+", " ", text).strip()
+        if len(text) < 12:
+            continue
+        return text[:4000]
+    return None
+
+
+def chunk_row(
+    slug: str, name: str, tagline: str | None, rss: str, desc: str | None
+) -> str:
+    desc_sql = "null"
+    if desc:
+        desc_sql = "'" + sql_escape(desc) + "'"
     ts = "null"
     if tagline:
         ts = "'" + sql_escape(tagline[:220]) + "'"
@@ -281,7 +319,7 @@ def chunk_row(slug: str, name: str, tagline: str | None, rss: str) -> str:
         f"  '{sql_escape(slug)}',\n"
         f"  '{sql_escape(name)}',\n"
         f"  {ts},\n"
-        f"  '{sql_escape(desc)}',\n"
+        f"  {desc_sql},\n"
         f"  '{sql_escape(rss)}',\n"
         "  null,\n"
         "  false, true, true,\n"
@@ -330,6 +368,9 @@ def main() -> None:
         if slug in EXISTING_SLUGS:
             continue
 
+        channel_desc = rss_channel_description(rss)
+        time.sleep(0.12)
+
         rows.append(
             {
                 "slug": slug,
@@ -337,6 +378,7 @@ def main() -> None:
                 "tagline": artist or "",
                 "rss": rss,
                 "art": img,
+                "desc": channel_desc,
             }
         )
 
@@ -349,7 +391,16 @@ def main() -> None:
         "  has_transcript_in_rss, is_curated, is_active, year_started,\n",
         "  publishing_frequency, difficulty_level, tags, twitter_handle\n",
         ") values\n",
-        ",\n".join(chunk_row(r["slug"], r["name"], r["tagline"] or None, r["rss"]) for r in rows),
+        ",\n".join(
+            chunk_row(
+                r["slug"],
+                r["name"],
+                r["tagline"] or None,
+                r["rss"],
+                r.get("desc"),
+            )
+            for r in rows
+        ),
         "\non conflict (slug) do nothing;\n\n",
     ]
     cov = "".join(cover(r["slug"], r["art"]) for r in rows if r.get("art"))

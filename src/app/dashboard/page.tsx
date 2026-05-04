@@ -63,7 +63,11 @@ export default async function DashboardPage() {
                   name={p.name}
                   tagline={p.tagline ?? ""}
                   coverImageUrl={p.cover_image_url}
-                  isCurated={p.is_curated}
+                  subscribe={{
+                    podcastId: p.id,
+                    initialSubscribed: true,
+                    isAuthenticated: true,
+                  }}
                 />
               ))}
             </div>

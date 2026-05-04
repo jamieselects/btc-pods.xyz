@@ -20,11 +20,12 @@ export async function SiteHeader() {
         </Link>
 
         <nav className="flex items-center gap-1">
+          {donationsEnabled ? (
+            <DonateButton triggerLabel="Pay what you can" />
+          ) : null}
           <Button asChild variant="ghost" size="sm">
             <Link href="/podcasts">Podcasts</Link>
           </Button>
-
-          {donationsEnabled ? <DonateButton /> : null}
 
           {user ? (
             <>

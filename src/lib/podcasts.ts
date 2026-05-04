@@ -12,6 +12,17 @@ import type {
  * render an empty state during local dev without env vars.
  */
 
+function sortPodcastsByPopularityThenName<T extends PodcastRow>(
+  podcasts: T[],
+): T[] {
+  return [...podcasts].sort((a, b) => {
+    const ca = a.subscription_count ?? 0;
+    const cb = b.subscription_count ?? 0;
+    if (cb !== ca) return cb - ca;
+    return a.name.localeCompare(b.name, undefined, { sensitivity: "base" });
+  });
+}
+
 export async function listCuratedPodcasts(): Promise<PodcastRow[]> {
   try {
     const supabase = await createClient();
@@ -19,10 +30,50 @@ export async function listCuratedPodcasts(): Promise<PodcastRow[]> {
       .from("podcasts")
       .select("*")
       .eq("is_active", true)
-      .eq("is_curated", true)
-      .order("name", { ascending: true });
+      .eq("is_curated", true);
     if (error) return [];
-    return (data ?? []) as PodcastRow[];
+    return sortPodcastsByPopularityThenName((data ?? []) as PodcastRow[]);
+  } catch {
+    return [];
+  }
+}
+
+/** Curated list row with linked host names (for browse UI / search). */
+export type CuratedPodcastWithHosts = PodcastRow & { hostNames: string[] };
+
+type PodcastHostJoinRow = {
+  hosts: { name: string } | null;
+};
+
+export async function listCuratedPodcastsWithHosts(): Promise<
+  CuratedPodcastWithHosts[]
+> {
+  try {
+    const supabase = await createClient();
+    const { data, error } = await supabase
+      .from("podcasts")
+      .select("*, podcast_hosts ( hosts ( name ) )")
+      .eq("is_active", true)
+      .eq("is_curated", true);
+    if (error) {
+      const basic = await listCuratedPodcasts();
+      return basic.map((p) => ({ ...p, hostNames: [] as string[] }));
+    }
+
+    const mapped = (
+      (data ?? []) as unknown as (PodcastRow & {
+        podcast_hosts: PodcastHostJoinRow[] | null;
+      })[]
+    ).map((row) => {
+      const { podcast_hosts, ...podcast } = row;
+      const hostNames =
+        podcast_hosts
+          ?.map((ph) => ph.hosts?.name)
+          .filter((n): n is string => Boolean(n?.trim())) ?? [];
+      return { ...(podcast as PodcastRow), hostNames };
+    });
+
+    return sortPodcastsByPopularityThenName(mapped);
   } catch {
     return [];
   }
