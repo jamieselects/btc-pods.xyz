@@ -61,7 +61,7 @@ async function main() {
     process.env.NEXT_PUBLIC_APP_URL?.replace(/\/$/, "") ||
     "http://localhost:3000";
 
-  const { processPodcast } = await import("../src/lib/pipeline/processPodcast.ts");
+  const { processPodcast } = await import("../src/lib/pipeline/processPodcast");
   const db = createClient(url, key);
 
   for (const slug of slugs) {
