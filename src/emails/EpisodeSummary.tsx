@@ -9,6 +9,7 @@ import {
   Section,
   Text,
 } from "@react-email/components";
+import { SponsorshipEmailLines } from "@/emails/SponsorshipEmailLines";
 
 export type EpisodeSummaryProps = {
   podcastName: string;
@@ -17,6 +18,7 @@ export type EpisodeSummaryProps = {
   keyTopics: string;
   marketSignals: string;
   actionableInsights: string;
+  sponsorships: string;
 };
 
 const main = {
@@ -49,6 +51,7 @@ export function EpisodeSummary({
   keyTopics,
   marketSignals,
   actionableInsights,
+  sponsorships,
 }: EpisodeSummaryProps) {
   return (
     <Html>
@@ -75,6 +78,13 @@ export function EpisodeSummary({
 
             <Text style={sectionLabel}>Actionable insights</Text>
             <Text style={body}>{actionableInsights}</Text>
+
+            {sponsorships.trim() ? (
+              <>
+                <Text style={sectionLabel}>Episode sponsorships</Text>
+                <SponsorshipEmailLines text={sponsorships} />
+              </>
+            ) : null}
           </Section>
 
           <Section style={{ marginTop: "32px" }}>

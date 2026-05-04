@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { SponsorshipBody } from "@/components/SponsorshipBody";
 import { getEpisodeWithSummary } from "@/lib/podcasts";
 
 type Props = { params: Promise<{ id: string }> };
@@ -58,6 +59,15 @@ export default async function EpisodeSummaryPage({ params }: Props) {
               title="Actionable insights"
               body={summary.actionable_insights}
             />
+
+            {summary.sponsorships?.trim() ? (
+              <section>
+                <h2 className="mb-2 font-mono text-xs uppercase tracking-widest text-primary">
+                  Episode sponsorships
+                </h2>
+                <SponsorshipBody text={summary.sponsorships} />
+              </section>
+            ) : null}
 
             {summary.full_summary_md ? (
               <details className="mt-4 rounded-lg border border-border bg-card p-4">

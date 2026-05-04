@@ -8,6 +8,26 @@ const nextConfig: NextConfig = {
         hostname: "**.mzstatic.com",
         pathname: "/image/**",
       },
+      {
+        protocol: "https",
+        hostname: "**.podbean.com",
+        pathname: "/**",
+      },
+      {
+        protocol: "https",
+        hostname: "megaphone.imgix.net",
+        pathname: "/**",
+      },
+      {
+        protocol: "https",
+        hostname: "**.scdn.co",
+        pathname: "/**",
+      },
+      {
+        protocol: "https",
+        hostname: "**.simplecastcdn.com",
+        pathname: "/**",
+      },
     ],
   },
   // Both `openai` (file uploads via fs streams) and `ffmpeg-static` (binary

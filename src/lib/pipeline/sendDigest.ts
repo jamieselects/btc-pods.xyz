@@ -13,6 +13,7 @@ export type DigestPayload = {
   keyTopics: string;
   marketSignals: string;
   actionableInsights: string;
+  sponsorships: string;
 };
 
 export type Recipient = {
