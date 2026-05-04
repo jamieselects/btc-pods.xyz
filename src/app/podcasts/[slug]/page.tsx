@@ -7,6 +7,7 @@ import {
   listEpisodesForPodcast,
   listUserSubscriptionPodcastIds,
 } from "@/lib/podcasts";
+import { displayPodcastDescription } from "@/lib/podcast-description";
 import { getCurrentUser } from "@/lib/dal";
 
 type Props = { params: Promise<{ slug: string }> };
@@ -14,9 +15,11 @@ type Props = { params: Promise<{ slug: string }> };
 export async function generateMetadata({ params }: Props) {
   const { slug } = await params;
   const podcast = await getPodcastBySlug(slug);
+  const summary =
+    displayPodcastDescription(podcast?.description) ?? podcast?.tagline;
   return {
     title: podcast?.name ?? "Podcast",
-    description: podcast?.tagline ?? undefined,
+    description: summary ?? undefined,
   };
 }
 
@@ -34,6 +37,8 @@ export default async function PodcastDetailPage({ params }: Props) {
     ? (await listUserSubscriptionPodcastIds(user.id)).has(podcast.id)
     : false;
 
+  const descriptionText = displayPodcastDescription(podcast.description);
+
   return (
     <main className="flex flex-1 flex-col px-6 py-12">
       <div className="mx-auto w-full max-w-4xl">
@@ -48,9 +53,9 @@ export default async function PodcastDetailPage({ params }: Props) {
             {podcast.tagline ? (
               <p className="text-sm text-muted-foreground">{podcast.tagline}</p>
             ) : null}
-            {podcast.description ? (
+            {descriptionText ? (
               <p className="mt-2 max-w-prose text-sm text-foreground/80">
-                {podcast.description}
+                {descriptionText}
               </p>
             ) : null}
             <div className="mt-2 flex flex-wrap gap-3 text-xs text-muted-foreground">
@@ -85,6 +90,7 @@ export default async function PodcastDetailPage({ params }: Props) {
 
           <div className="shrink-0">
             <SubscribeButton
+              key={`${podcast.id}-${subscribed}`}
               podcastId={podcast.id}
               initialSubscribed={subscribed}
               isAuthenticated={Boolean(user)}

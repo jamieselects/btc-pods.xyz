@@ -1,5 +1,6 @@
 "use client";
 
+import type { ComponentProps } from "react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Dialog } from "radix-ui";
 import { QRCodeSVG } from "qrcode.react";
@@ -31,7 +32,20 @@ type Phase =
   | { kind: "expired" }
   | { kind: "error"; message: string };
 
-export function DonateButton() {
+export type DonateButtonProps = Pick<
+  ComponentProps<typeof Button>,
+  "variant" | "size" | "className"
+> & {
+  /** Label on the trigger control (default: "Donate sats"). */
+  triggerLabel?: string;
+};
+
+export function DonateButton({
+  triggerLabel = "Donate sats",
+  variant = "outline",
+  size = "sm",
+  className,
+}: DonateButtonProps) {
   const [open, setOpen] = useState(false);
   const [presetSats, setPresetSats] = useState<number>(PRESETS[2].sats);
   const [customSats, setCustomSats] = useState<string>("");
@@ -105,8 +119,8 @@ export function DonateButton() {
   return (
     <Dialog.Root open={open} onOpenChange={handleOpenChange}>
       <Dialog.Trigger asChild>
-        <Button variant="outline" size="sm">
-          Donate sats
+        <Button variant={variant} size={size} className={className}>
+          {triggerLabel}
         </Button>
       </Dialog.Trigger>
       <Dialog.Portal>

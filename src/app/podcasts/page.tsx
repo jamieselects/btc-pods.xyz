@@ -1,11 +1,21 @@
 import Link from "next/link";
-import { PodcastCard } from "@/components/PodcastCard";
-import { listCuratedPodcasts } from "@/lib/podcasts";
+import { PodcastsBrowse } from "@/components/PodcastsBrowse";
+import { getCurrentUser } from "@/lib/dal";
+import {
+  listCuratedPodcastsWithHosts,
+  listUserSubscriptionPodcastIds,
+} from "@/lib/podcasts";
 
 export const metadata = { title: "Browse podcasts" };
 
 export default async function PodcastsPage() {
-  const podcasts = await listCuratedPodcasts();
+  const [podcasts, user] = await Promise.all([
+    listCuratedPodcastsWithHosts(),
+    getCurrentUser(),
+  ]);
+  const subscribedPodcastIds = user
+    ? [...(await listUserSubscriptionPodcastIds(user.id))]
+    : [];
 
   return (
     <main className="flex flex-1 flex-col px-6 py-12">
@@ -33,18 +43,11 @@ export default async function PodcastsPage() {
             to be notified when we launch.
           </div>
         ) : (
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {podcasts.map((p) => (
-              <PodcastCard
-                key={p.id}
-                slug={p.slug}
-                name={p.name}
-                tagline={p.tagline ?? ""}
-                coverImageUrl={p.cover_image_url}
-                isCurated={p.is_curated}
-              />
-            ))}
-          </div>
+          <PodcastsBrowse
+            podcasts={podcasts}
+            isAuthenticated={Boolean(user)}
+            subscribedPodcastIds={subscribedPodcastIds}
+          />
         )}
       </div>
     </main>

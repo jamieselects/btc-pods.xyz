@@ -37,6 +37,8 @@ export type PodcastRow = {
   spotify_url: string | null;
   podcastindex_id: string | null;
   value4value_enabled: boolean;
+  /** Denormalized; maintained by triggers (migration 009). Omitted before migration. */
+  subscription_count?: number;
   created_at: string;
 };
 

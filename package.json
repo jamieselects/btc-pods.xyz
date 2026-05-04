@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "backfill:latest-episodes": "NODE_OPTIONS='--require ./scripts/stub-server-only.cjs' npx tsx scripts/backfill-latest-episodes.ts"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.92.0",
