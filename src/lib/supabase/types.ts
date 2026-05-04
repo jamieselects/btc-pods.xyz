@@ -61,6 +61,7 @@ export type SummaryRow = {
   key_topics: string | null;
   market_signals: string | null;
   actionable_insights: string | null;
+  sponsorships: string | null;
   full_summary_md: string | null;
   model_used: string | null;
   input_tokens: number | null;

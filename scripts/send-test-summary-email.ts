@@ -39,7 +39,7 @@ async function main() {
       title,
       published_at,
       podcasts!inner ( name, slug ),
-      summaries!inner ( id, key_topics, market_signals, actionable_insights )
+      summaries!inner ( id, key_topics, market_signals, actionable_insights, sponsorships )
     `,
     )
     .eq("podcasts.slug", "what-bitcoin-did")
@@ -67,6 +67,7 @@ async function main() {
         key_topics: string | null;
         market_signals: string | null;
         actionable_insights: string | null;
+        sponsorships: string | null;
       }
     | undefined;
   if (!summary) {
@@ -90,6 +91,7 @@ async function main() {
       keyTopics: summary.key_topics ?? "",
       marketSignals: summary.market_signals ?? "",
       actionableInsights: summary.actionable_insights ?? "",
+      sponsorships: summary.sponsorships ?? "",
     },
   });
 

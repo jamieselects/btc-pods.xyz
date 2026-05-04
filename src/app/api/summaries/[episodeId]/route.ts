@@ -31,6 +31,7 @@ export async function GET(_req: Request, { params }: Params) {
       key_topics: episode.summary.key_topics,
       market_signals: episode.summary.market_signals,
       actionable_insights: episode.summary.actionable_insights,
+      sponsorships: episode.summary.sponsorships,
       full_summary_md: episode.summary.full_summary_md,
       model_used: episode.summary.model_used,
     },

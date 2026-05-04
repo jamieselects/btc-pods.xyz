@@ -177,6 +177,7 @@ async function processEpisode(
         key_topics: summary.keyTopics,
         market_signals: summary.marketSignals,
         actionable_insights: summary.actionableInsights,
+        sponsorships: summary.sponsorships,
         full_summary_md: summary.fullSummaryMd,
         model_used: summary.modelUsed,
         input_tokens: summary.inputTokens,
@@ -252,6 +253,7 @@ async function processEpisode(
           keyTopics: summary.keyTopics,
           marketSignals: summary.marketSignals,
           actionableInsights: summary.actionableInsights,
+          sponsorships: summary.sponsorships,
         },
       });
       delivery = { sent: report.sent, failed: report.failed };

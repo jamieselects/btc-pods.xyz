@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { PodcastCard } from "@/components/PodcastCard";
+import { SuggestPodcastForm } from "@/components/SuggestPodcastForm";
 import type { CuratedPodcastWithHosts } from "@/lib/podcasts";
 
 type PodcastsBrowseProps = {
@@ -37,6 +38,10 @@ export function PodcastsBrowse({
 
   return (
     <div className="flex flex-col gap-6">
+      <div className="rounded-lg border border-border bg-card/40 p-4">
+        <SuggestPodcastForm />
+      </div>
+
       <search className="flex flex-col gap-1.5 sm:max-w-md" aria-label="Search podcasts">
         <label htmlFor="podcast-search" className="text-sm font-medium">
           Search
