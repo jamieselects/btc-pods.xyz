@@ -3,13 +3,17 @@ import { Resend } from "resend";
 import { render } from "@react-email/components";
 import { env } from "@/lib/env";
 import { EpisodeSummary } from "@/emails/EpisodeSummary";
+import { cleanSectionBody } from "@/lib/pipeline/summarise";
 import type { DeliveryStatus } from "@/lib/supabase/types";
 import type { SupabaseClient } from "@supabase/supabase-js";
 
 export type DigestPayload = {
   podcastName: string;
   episodeTitle: string;
+  /** In-app summary + transcript page. */
   episodeUrl: string;
+  /** RSS episode link (show notes / publisher page); optional. */
+  listenUrl: string | null;
   keyTopics: string;
   marketSignals: string;
   actionableInsights: string;
@@ -57,7 +61,15 @@ export async function sendDigest({
 
   const resend = new Resend(env.RESEND_API_KEY);
 
-  const emailElement = createElement(EpisodeSummary, payload);
+  const emailProps = {
+    ...payload,
+    keyTopics: cleanSectionBody(payload.keyTopics, "key"),
+    marketSignals: cleanSectionBody(payload.marketSignals, "market"),
+    actionableInsights: cleanSectionBody(payload.actionableInsights, "action"),
+    sponsorships: cleanSectionBody(payload.sponsorships, "sponsor"),
+  };
+
+  const emailElement = createElement(EpisodeSummary, emailProps);
   const html = await render(emailElement);
   const text = await render(emailElement, { plainText: true });
   const subject = `${payload.podcastName} — ${payload.episodeTitle}`;

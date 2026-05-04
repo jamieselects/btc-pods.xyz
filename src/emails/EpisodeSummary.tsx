@@ -10,11 +10,13 @@ import {
   Text,
 } from "@react-email/components";
 import { SponsorshipEmailLines } from "@/emails/SponsorshipEmailLines";
+import { SummarySectionBody } from "@/emails/SummarySectionBody";
 
 export type EpisodeSummaryProps = {
   podcastName: string;
   episodeTitle: string;
   episodeUrl: string;
+  listenUrl: string | null;
   keyTopics: string;
   marketSignals: string;
   actionableInsights: string;
@@ -42,17 +44,27 @@ const sectionLabel = {
   margin: "24px 0 8px",
 };
 
-const body = { color: "#ededed", fontSize: "14px", lineHeight: "1.6", whiteSpace: "pre-line" as const };
+const linkRow = {
+  color: "#ededed",
+  fontSize: "14px",
+  lineHeight: "1.6",
+  margin: "12px 0 0",
+} as const;
 
 export function EpisodeSummary({
   podcastName,
   episodeTitle,
   episodeUrl,
+  listenUrl,
   keyTopics,
   marketSignals,
   actionableInsights,
   sponsorships,
 }: EpisodeSummaryProps) {
+  const listen = (listenUrl?.trim() || episodeUrl).trim();
+  const summaryPage = episodeUrl.trim();
+  const showSeparateSummaryLink = listen !== summaryPage;
+
   return (
     <Html>
       <Head />
@@ -66,18 +78,45 @@ export function EpisodeSummary({
             {episodeTitle}
           </Heading>
           <Text style={{ color: "#a1a1a1", fontSize: "13px", margin: 0 }}>
-            {podcastName}
+            from {podcastName}
+          </Text>
+
+          <Text style={linkRow}>
+            {showSeparateSummaryLink ? (
+              <>
+                <Link
+                  href={listen}
+                  style={{ color: "#F7931A", textDecoration: "underline" }}
+                >
+                  Listen to this episode
+                </Link>
+                {" · "}
+                <Link
+                  href={summaryPage}
+                  style={{ color: "#F7931A", textDecoration: "underline" }}
+                >
+                  Full summary &amp; transcript
+                </Link>
+              </>
+            ) : (
+              <Link
+                href={summaryPage}
+                style={{ color: "#F7931A", textDecoration: "underline" }}
+              >
+                Full summary &amp; transcript
+              </Link>
+            )}
           </Text>
 
           <Section>
             <Text style={sectionLabel}>Key topics</Text>
-            <Text style={body}>{keyTopics}</Text>
+            <SummarySectionBody text={keyTopics} />
 
             <Text style={sectionLabel}>Market &amp; price signals</Text>
-            <Text style={body}>{marketSignals}</Text>
+            <SummarySectionBody text={marketSignals} />
 
             <Text style={sectionLabel}>Actionable insights</Text>
-            <Text style={body}>{actionableInsights}</Text>
+            <SummarySectionBody text={actionableInsights} />
 
             {sponsorships.trim() ? (
               <>
@@ -85,12 +124,6 @@ export function EpisodeSummary({
                 <SponsorshipEmailLines text={sponsorships} />
               </>
             ) : null}
-          </Section>
-
-          <Section style={{ marginTop: "32px" }}>
-            <Link href={episodeUrl} style={{ color: "#F7931A", fontSize: "14px" }}>
-              Read the full summary →
-            </Link>
           </Section>
         </Container>
       </Body>

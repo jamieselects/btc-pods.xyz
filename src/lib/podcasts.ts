@@ -109,7 +109,7 @@ export async function listEpisodesForPodcast(
     const { data, error } = await supabase
       .from("episodes")
       .select(
-        "id, podcast_id, guid, title, published_at, audio_url, transcript, transcript_source, duration_seconds, created_at, summary:summaries(id, key_topics)",
+        "id, podcast_id, guid, title, published_at, audio_url, source_link, transcript, transcript_source, duration_seconds, created_at, summary:summaries(id, key_topics)",
       )
       .eq("podcast_id", podcastId)
       .order("published_at", { ascending: false })
