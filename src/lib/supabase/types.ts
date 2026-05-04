@@ -49,6 +49,8 @@ export type EpisodeRow = {
   title: string;
   published_at: string | null;
   audio_url: string | null;
+  /** RSS `<item><link>` when present — publisher episode page for “listen” links. */
+  source_link: string | null;
   transcript: string | null;
   transcript_source: TranscriptSource | null;
   duration_seconds: number | null;

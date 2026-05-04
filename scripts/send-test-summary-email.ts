@@ -38,6 +38,7 @@ async function main() {
       id,
       title,
       published_at,
+      source_link,
       podcasts!inner ( name, slug ),
       summaries!inner ( id, key_topics, market_signals, actionable_insights, sponsorships )
     `,
@@ -88,6 +89,10 @@ async function main() {
       podcastName: podcast.name,
       episodeTitle: row.title,
       episodeUrl: `${APP_BASE.replace(/\/$/, "")}/episodes/${row.id}`,
+      listenUrl:
+        typeof row.source_link === "string" && row.source_link.trim()
+          ? row.source_link.trim()
+          : null,
       keyTopics: summary.key_topics ?? "",
       marketSignals: summary.market_signals ?? "",
       actionableInsights: summary.actionable_insights ?? "",
