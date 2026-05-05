@@ -1,7 +1,6 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
 import { toggleSubscription } from "@/app/actions/subscriptions";
 import { Button } from "@/components/ui/button";
@@ -21,7 +20,6 @@ export function SubscribeButton({
   isAuthenticated,
   fullWidth,
 }: Props) {
-  const router = useRouter();
   const [subscribed, setSubscribed] = useState(initialSubscribed);
   const [pending, start] = useTransition();
   const [error, setError] = useState<string | null>(null);
@@ -45,7 +43,6 @@ export function SubscribeButton({
         setError(result.error ?? "Something went wrong.");
         return;
       }
-      router.refresh();
     });
   };
 

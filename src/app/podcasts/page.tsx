@@ -30,8 +30,8 @@ export default async function PodcastsPage() {
           </h1>
           <p className="max-w-prose text-sm text-muted-foreground">
             Curated Bitcoin shows — and you can add one with an RSS or page
-            link below. Subscribe and we&apos;ll summarise new episodes within
-            hours of release.
+            link below. Subscribe and we&apos;ll summarise new episodes as
+            they&apos;re released.
           </p>
         </header>
 
