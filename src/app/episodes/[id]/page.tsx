@@ -1,7 +1,10 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { SponsorshipBody } from "@/components/SponsorshipBody";
+import { SummarySectionWeb } from "@/components/SummarySectionBodyWeb";
+import { TranscriptPanel } from "@/components/TranscriptPanel";
 import { getEpisodeWithSummary } from "@/lib/podcasts";
+import { cleanSectionBody } from "@/lib/summarySectionFormat";
 
 type Props = { params: Promise<{ id: string }> };
 
@@ -19,6 +22,10 @@ export default async function EpisodeSummaryPage({ params }: Props) {
   if (!episode) notFound();
 
   const { summary, podcast } = episode;
+  const sponsorshipDisplay =
+    summary?.sponsorships?.trim()
+      ? cleanSectionBody(summary.sponsorships, "sponsor").trim()
+      : "";
 
   return (
     <main className="flex flex-1 flex-col px-6 py-12">
@@ -50,35 +57,35 @@ export default async function EpisodeSummaryPage({ params }: Props) {
 
         {summary ? (
           <div className="flex flex-col gap-8 text-sm leading-relaxed">
-            <Section title="Key topics" body={summary.key_topics} />
-            <Section
-              title="Market & price signals"
-              body={summary.market_signals}
-            />
-            <Section
-              title="Actionable insights"
-              body={summary.actionable_insights}
-            />
-
-            {summary.sponsorships?.trim() ? (
+            {sponsorshipDisplay ? (
               <section>
                 <h2 className="mb-2 font-mono text-xs uppercase tracking-widest text-primary">
                   Episode sponsorships
                 </h2>
-                <SponsorshipBody text={summary.sponsorships} />
+                <SponsorshipBody text={sponsorshipDisplay} />
               </section>
             ) : null}
 
-            {summary.full_summary_md ? (
-              <details className="mt-4 rounded-lg border border-border bg-card p-4">
-                <summary className="cursor-pointer font-mono text-xs uppercase tracking-wider text-muted-foreground">
-                  Full summary
-                </summary>
-                <pre className="mt-3 whitespace-pre-wrap font-sans text-sm text-foreground/90">
-                  {summary.full_summary_md}
-                </pre>
-              </details>
-            ) : null}
+            <SummarySectionWeb
+              title="Key topics"
+              text={summary.key_topics}
+              kind="key"
+            />
+            <SummarySectionWeb
+              title="Market & price signals"
+              text={summary.market_signals}
+              kind="market"
+            />
+            <SummarySectionWeb
+              title="Actionable insights"
+              text={summary.actionable_insights}
+              kind="action"
+            />
+
+            <TranscriptPanel
+              transcript={episode.transcript}
+              episodeTitle={episode.title}
+            />
           </div>
         ) : (
           <div className="rounded-lg border border-dashed border-border bg-card/50 p-6 text-sm text-muted-foreground">
@@ -87,17 +94,5 @@ export default async function EpisodeSummaryPage({ params }: Props) {
         )}
       </article>
     </main>
-  );
-}
-
-function Section({ title, body }: { title: string; body: string | null }) {
-  if (!body?.trim()) return null;
-  return (
-    <section>
-      <h2 className="mb-2 font-mono text-xs uppercase tracking-widest text-primary">
-        {title}
-      </h2>
-      <p className="whitespace-pre-line text-foreground/90">{body}</p>
-    </section>
   );
 }

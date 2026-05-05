@@ -5,10 +5,16 @@
  * Prereqs: `.env.local` with Supabase service role, Strike optional, and LLM
  * keys used by summarise/transcript resolution.
  *
- *   npx tsx scripts/backfill-latest-episodes.ts
+ *   npm run backfill:latest-episodes
+ *
+ * Latest What Bitcoin Did only (same pipeline as production cron):
+ *   SLUGS=what-bitcoin-did MAX_PER_RUN=1 npm run backfill:latest-episodes
  *
  * Override defaults:
- *   SLUGS=the-bitcoin-layer,coin-stories LOOKBACK_DAYS=400 MAX_PER_RUN=3 npx tsx scripts/backfill-latest-episodes.ts
+ *   SLUGS=the-bitcoin-layer,coin-stories LOOKBACK_DAYS=400 MAX_PER_RUN=3 npm run backfill:latest-episodes
+ *
+ * Note: only episodes not already stored (by RSS guid) are ingested. To
+ * re-summarize an existing episode, use `npm run resummarize:episode -- <uuid>`.
  */
 
 import { readFileSync, existsSync } from "node:fs";
