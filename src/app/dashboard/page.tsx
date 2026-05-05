@@ -82,7 +82,7 @@ export default async function DashboardPage() {
           {recent.length === 0 ? (
             <div className="rounded-lg border border-dashed border-border bg-card/50 p-6 text-sm text-muted-foreground">
               No summaries yet. New episodes are picked up on the scheduled cron
-              (hourly).
+              (every 30 minutes).
             </div>
           ) : (
             <div className="flex flex-col gap-3">
