@@ -22,7 +22,7 @@ fast, Bitcoin-native. Built per
 | Email           | Resend + React Email                               |
 | Donations       | Strike for Business (Lightning, phase 3)           |
 | Analytics       | PostHog (server + client)                          |
-| Cron            | Vercel Cron, daily at 08:00 UTC                    |
+| Cron            | Vercel Cron, hourly (`0 * * * *` UTC)              |
 
 > The design doc was written against Next.js 14. We use the latest stable
 > (Next.js 16) — same App Router primitives, no behaviour change for this app.
@@ -53,7 +53,7 @@ src/
     episodes/[id]/     # public episode summary page
     api/
       auth/callback/
-      cron/process-episodes/    # daily cron entry point
+      cron/process-episodes/    # scheduled cron entry point
       donate/{create-invoice,webhook}/   # phase 3
       podcasts/{,add}/
       subscriptions/
@@ -98,7 +98,12 @@ Or paste the SQL directly into the Supabase SQL editor.
 
 ## Cron
 
-`vercel.json` schedules `POST /api/cron/process-episodes` daily at 08:00 UTC.
+`vercel.json` schedules `POST /api/cron/process-episodes` every hour (`0 * * * *` UTC).
+
+**Vercel plan:** Hobby only allows **one run per calendar day**; an hourly cron
+**fails deployment** on Hobby (“limited to daily cron jobs”). Use **Pro** for
+hourly schedules, or keep `0 8 * * *` and trigger the same URL from an
+external scheduler (with `Authorization: Bearer $CRON_SECRET`) more often.
 The route checks `Authorization: Bearer ${CRON_SECRET}`. To run it locally:
 
 ```bash

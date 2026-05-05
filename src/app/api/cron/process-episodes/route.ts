@@ -9,7 +9,7 @@ export const runtime = "nodejs";
 export const maxDuration = 300;
 
 /**
- * Daily cron entry point. Iterates curated podcasts, processes new episodes,
+ * Cron entry point (hourly on Vercel). Iterates curated podcasts, processes new episodes,
  * generates summaries, and dispatches digest emails. Idempotent on episode.guid.
  *
  * Auth: requires `Authorization: Bearer ${CRON_SECRET}`. Vercel Cron sends
