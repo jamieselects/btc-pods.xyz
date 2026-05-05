@@ -2,8 +2,8 @@
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "crons": [
     {
-      "path": "/api/cron/process-episodes",
-      "schedule": "*/30 * * * *"
+      "path": "/api/cron/dispatch-podcasts",
+      "schedule": "*/5 * * * *"
     }
   ]
 }

@@ -8,6 +8,7 @@
     "start": "next start",
     "lint": "eslint",
     "backfill:latest-episodes": "NODE_OPTIONS='--require ./scripts/stub-server-only.cjs' npx tsx scripts/backfill-latest-episodes.ts",
+    "generate:crons": "npx tsx scripts/generate-vercel-crons.ts",
     "resummarize:episode": "npx tsx scripts/resummarize-episode.ts"
   },
   "dependencies": {
