@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
+import { captureServerEvent, distinctUserId } from "@/lib/posthog";
 
 export type ToggleResult = {
   ok: boolean;
@@ -41,6 +42,11 @@ export async function toggleSubscription(
     if (error) {
       return { ok: false, subscribed: false, error: error.message };
     }
+    await captureServerEvent({
+      distinctId: distinctUserId(userData.user.id),
+      event: "podcast_subscribed",
+      properties: { podcast_id: podcastId },
+    });
   } else {
     const { error } = await supabase
       .from("subscriptions")
@@ -50,6 +56,11 @@ export async function toggleSubscription(
     if (error) {
       return { ok: false, subscribed: true, error: error.message };
     }
+    await captureServerEvent({
+      distinctId: distinctUserId(userData.user.id),
+      event: "podcast_unsubscribed",
+      properties: { podcast_id: podcastId },
+    });
   }
 
   revalidatePath("/dashboard");

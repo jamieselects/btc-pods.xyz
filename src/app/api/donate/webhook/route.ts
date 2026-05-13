@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { env, hasEnv } from "@/lib/env";
 import { createServiceClient } from "@/lib/supabase/server";
 import { findInvoice, verifyWebhookSignature } from "@/lib/strike";
+import { captureServerEvent, distinctUserId } from "@/lib/posthog";
 
 export const runtime = "nodejs";
 export const maxDuration = 30;
@@ -77,12 +78,29 @@ export async function POST(req: Request) {
   let updateError: { message: string } | null = null;
 
   if (invoice.state === "PAID") {
-    const { error } = await db
+    const { data: paidRows, error } = await db
       .from("donations")
       .update({ status: "paid", paid_at: new Date().toISOString() })
       .eq("strike_invoice_id", invoiceId)
-      .eq("status", "pending");
+      .eq("status", "pending")
+      .select("id, user_id, amount_sats");
     updateError = error;
+    const row = paidRows?.[0];
+    if (!error && row) {
+      const distinctId = row.user_id
+        ? distinctUserId(row.user_id as string)
+        : `anonymous_donation:${row.id as string}`;
+      await captureServerEvent({
+        distinctId,
+        event: "donation_completed",
+        properties: {
+          donation_id: row.id,
+          amount_sats: row.amount_sats,
+          has_user_account: Boolean(row.user_id),
+          $insert_id: `donation_paid_${row.id}`,
+        },
+      });
+    }
   } else if (invoice.state === "EXPIRED" || invoice.state === "CANCELLED") {
     const { error } = await db
       .from("donations")

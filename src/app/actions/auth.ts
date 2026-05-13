@@ -5,6 +5,7 @@ import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
+import { captureServerEvent, distinctUserId } from "@/lib/posthog";
 
 const credentialsSchema = z.object({
   email: z.email({ error: "Enter a valid email address." }).trim(),
@@ -61,6 +62,16 @@ export async function signUp(
         "Check your inbox — we sent a confirmation link to finish signing you up.",
     };
   }
+
+  const user = sessionData.session.user;
+  await captureServerEvent({
+    distinctId: distinctUserId(user.id),
+    event: "user_signed_up",
+    properties: {
+      $insert_id: `signup_complete_${user.id}`,
+      signup_source: "password_immediate",
+    },
+  });
 
   revalidatePath("/", "layout");
   redirect("/dashboard");

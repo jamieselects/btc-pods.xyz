@@ -5,6 +5,7 @@ import { resolveTranscript } from "@/lib/pipeline/resolveTranscript";
 import { summarise } from "@/lib/pipeline/summarise";
 import { sendDigest } from "@/lib/pipeline/sendDigest";
 import {
+  distinctUserId,
   estimateHaikuCostUsd,
   estimateWhisperCostUsd,
   getPostHogServer,
@@ -238,7 +239,6 @@ async function processEpisode(
           duration_seconds: durationSeconds,
         },
       });
-      await posthog.flush();
     }
 
     let delivery = { sent: 0, failed: 0 } as { sent: number; failed: number };
@@ -259,6 +259,40 @@ async function processEpisode(
         },
       });
       delivery = { sent: report.sent, failed: report.failed };
+
+      const ph = getPostHogServer();
+      if (ph) {
+        ph.capture({
+          distinctId: `podcast:${podcast.slug}`,
+          event: "summary_digest_sent",
+          properties: {
+            podcast_slug: podcast.slug,
+            podcast_id: podcast.id,
+            episode_id: episodeRow.id,
+            summary_id: summaryRow.id,
+            recipient_count: recipients.length,
+            emails_sent: report.sent,
+            emails_failed: report.failed,
+          },
+        });
+        for (const row of report.perRecipient) {
+          if (row.status === "failed") {
+            ph.capture({
+              distinctId: distinctUserId(row.userId),
+              event: "summary_digest_recipient_failed",
+              properties: {
+                podcast_slug: podcast.slug,
+                podcast_id: podcast.id,
+                episode_id: episodeRow.id,
+                summary_id: summaryRow.id,
+              },
+            });
+          }
+        }
+        await ph.flush();
+      }
+    } else if (posthog) {
+      await posthog.flush();
     }
 
     return {
