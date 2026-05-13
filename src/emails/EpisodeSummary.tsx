@@ -81,6 +81,15 @@ export function EpisodeSummary({
             from {podcastName}
           </Text>
 
+          {sponsorships.trim() ? (
+            <Section style={{ marginTop: "20px" }}>
+              <Text style={{ ...sectionLabel, marginTop: 0 }}>
+                Episode sponsorships
+              </Text>
+              <SponsorshipEmailLines text={sponsorships} />
+            </Section>
+          ) : null}
+
           <Text style={linkRow}>
             {showSeparateSummaryLink ? (
               <>
@@ -117,13 +126,6 @@ export function EpisodeSummary({
 
             <Text style={sectionLabel}>Actionable insights</Text>
             <SummarySectionBody text={actionableInsights} />
-
-            {sponsorships.trim() ? (
-              <>
-                <Text style={sectionLabel}>Episode sponsorships</Text>
-                <SponsorshipEmailLines text={sponsorships} />
-              </>
-            ) : null}
           </Section>
         </Container>
       </Body>
