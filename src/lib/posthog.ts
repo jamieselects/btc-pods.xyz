@@ -23,6 +23,31 @@ export function getPostHogServer(): PostHog | null {
   return cached;
 }
 
+/** Use the same `distinctId` as browser `posthog.identify(userId)` for funnels. */
+export function distinctUserId(userId: string) {
+  return userId;
+}
+
+/**
+ * One server-side event + flush. Prefer batching multiple `capture` calls on
+ * an existing client + single `flush()` in hot paths; this helper is for
+ * one-off routes and actions.
+ */
+export async function captureServerEvent(opts: {
+  distinctId: string;
+  event: string;
+  properties?: Record<string, unknown>;
+}): Promise<void> {
+  const ph = getPostHogServer();
+  if (!ph) return;
+  ph.capture({
+    distinctId: opts.distinctId,
+    event: opts.event,
+    properties: opts.properties,
+  });
+  await ph.flush();
+}
+
 /** Haiku pricing (per 1M tokens) — keep in sync with spec §9.2. */
 export const HAIKU_INPUT_USD_PER_M = 0.25;
 export const HAIKU_OUTPUT_USD_PER_M = 1.25;
