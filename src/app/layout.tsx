@@ -20,7 +20,7 @@ export const metadata: Metadata = {
     template: "%s · Bitcoin Podcast Summarizer",
   },
   description:
-    "AI-generated summaries of your favourite Bitcoin podcasts, delivered to your inbox.",
+    "AI-generated summaries of your favorite Bitcoin podcasts, delivered to your inbox.",
 };
 
 export default function RootLayout({

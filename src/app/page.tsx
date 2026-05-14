@@ -18,8 +18,8 @@ export default async function HomePage() {
           Bitcoin podcasts, summarised.
         </h1>
         <p className="text-balance text-lg text-muted-foreground">
-          Subscribe to your favourite Bitcoin shows. Get a concise email
-          summary after every new episode. Free, fast, and Bitcoin-native.
+          Subscribe to your favorite Bitcoin shows. Get a concise email
+          summary after every new episode.
         </p>
         <div className="flex flex-col gap-3 sm:flex-row">
           <Button asChild size="lg">
