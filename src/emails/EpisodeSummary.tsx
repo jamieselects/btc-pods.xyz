@@ -3,6 +3,7 @@ import {
   Container,
   Head,
   Heading,
+  Hr,
   Html,
   Link,
   Preview,
@@ -18,38 +19,32 @@ export type EpisodeSummaryProps = {
   episodeUrl: string;
   listenUrl: string | null;
   keyTopics: string;
+  /** Retained for API compatibility; no longer rendered. */
   marketSignals: string;
+  /** Retained for API compatibility; no longer rendered. */
   actionableInsights: string;
   sponsorships: string;
+  unsubscribeUrl?: string;
 };
 
-const main = {
-  backgroundColor: "#0a0a0a",
-  color: "#ededed",
-  fontFamily:
-    "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen-Sans, Ubuntu, Cantarell, sans-serif",
-};
-
-const container = {
-  margin: "0 auto",
-  padding: "32px 24px",
-  maxWidth: "560px",
-};
-
-const sectionLabel = {
-  color: "#F7931A",
-  fontSize: "12px",
-  letterSpacing: "0.08em",
-  textTransform: "uppercase" as const,
-  margin: "24px 0 8px",
-};
-
-const linkRow = {
-  color: "#ededed",
-  fontSize: "14px",
-  lineHeight: "1.6",
-  margin: "12px 0 0",
+// ── Hardcoded design tokens (CSS custom properties don't survive email clients) ──
+const C = {
+  bg: "#0a0a0a",
+  ink: "#ededed",
+  ink2: "#c8c6bf",
+  ink3: "#a1a1a1",
+  ink4: "#6e6e68",
+  rule: "#1e1e1e",
+  accent: "#F7931A",
+  accentOn: "#0a0a0a",
 } as const;
+
+function slugify(name: string) {
+  return name
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-|-$/g, "");
+}
 
 export function EpisodeSummary({
   podcastName,
@@ -57,76 +52,129 @@ export function EpisodeSummary({
   episodeUrl,
   listenUrl,
   keyTopics,
-  marketSignals,
-  actionableInsights,
   sponsorships,
+  unsubscribeUrl,
 }: EpisodeSummaryProps) {
   const listen = (listenUrl?.trim() || episodeUrl).trim();
   const summaryPage = episodeUrl.trim();
-  const showSeparateSummaryLink = listen !== summaryPage;
+  const showListenLink = listen !== summaryPage;
+  const podcastSlug = slugify(podcastName);
 
   return (
     <Html>
       <Head />
       <Preview>{`${podcastName} — ${episodeTitle}`}</Preview>
-      <Body style={main}>
-        <Container style={container}>
-          <Text style={{ color: "#F7931A", fontFamily: "monospace", fontSize: "12px", letterSpacing: "0.12em", margin: 0 }}>
-            ₿ BTC POD SUMMARIES
-          </Text>
-          <Heading as="h1" style={{ fontSize: "22px", margin: "8px 0 4px" }}>
-            {episodeTitle}
-          </Heading>
-          <Text style={{ color: "#a1a1a1", fontSize: "13px", margin: 0 }}>
-            from {podcastName}
+      <Body style={{ backgroundColor: C.bg, color: C.ink, fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen-Sans, Ubuntu, Cantarell, sans-serif", margin: 0 }}>
+        <Container style={{ margin: "0 auto", padding: "36px 28px", maxWidth: "560px" }}>
+
+          {/* ── Masthead ── */}
+          <Text style={{ margin: "0 0 28px", lineHeight: 1 }}>
+            <span style={{ color: C.accent, fontSize: "18px", fontWeight: 700 }}>₿</span>
+            {" "}
+            <span style={{ color: C.ink2, fontFamily: "monospace", fontSize: "11px", letterSpacing: "0.18em", textTransform: "uppercase" }}>
+              BTC Pod Summaries
+            </span>
           </Text>
 
+          {/* ── Episode card ── */}
+          <Text style={{ color: C.ink3, fontSize: "12px", letterSpacing: "0.06em", textTransform: "uppercase", margin: "0 0 10px" }}>
+            From{" "}
+            <Link
+              href={`https://btcpods.xyz/podcasts/${podcastSlug}`}
+              style={{ color: C.ink2, fontWeight: 500, textDecoration: "underline", textDecorationColor: C.accent }}
+            >
+              {podcastName}
+            </Link>
+          </Text>
+
+          <Heading
+            as="h1"
+            style={{ fontSize: "26px", lineHeight: "1.2", letterSpacing: "-0.015em", fontWeight: 600, color: C.ink, margin: "0 0 18px" }}
+          >
+            {episodeTitle}
+          </Heading>
+
+          {/* ── Pill CTAs ── */}
+          <Text style={{ margin: "0 0 0" }}>
+            <Link
+              href={listen}
+              style={{
+                background: C.accent,
+                color: C.accentOn,
+                padding: "8px 14px",
+                borderRadius: "999px",
+                fontSize: "13px",
+                fontWeight: 500,
+                textDecoration: "none",
+                display: "inline-block",
+                letterSpacing: "0.01em",
+                marginRight: showListenLink ? "8px" : "0",
+              }}
+            >
+              {showListenLink ? "Listen ↗" : "Full summary & transcript"}
+            </Link>
+            {showListenLink ? (
+              <Link
+                href={summaryPage}
+                style={{
+                  color: C.ink2,
+                  border: `1px solid ${C.rule}`,
+                  padding: "8px 14px",
+                  borderRadius: "999px",
+                  fontSize: "13px",
+                  fontWeight: 500,
+                  textDecoration: "none",
+                  display: "inline-block",
+                  letterSpacing: "0.01em",
+                }}
+              >
+                Full summary &amp; transcript
+              </Link>
+            ) : null}
+          </Text>
+
+          {/* ── Section: Key topics ── */}
+          <Section style={{ marginTop: "40px" }}>
+            <Hr style={{ border: "none", borderTop: `1px solid ${C.rule}`, margin: "0 0 14px" }} />
+            <Heading as="h2" style={{ margin: "0 0 22px", fontSize: "19px", fontWeight: 600, color: C.ink, letterSpacing: "-0.005em" }}>
+              Key topics
+            </Heading>
+            <SummarySectionBody text={keyTopics} />
+          </Section>
+
+          {/* ── Section: Episode Sponsors (only if present) ── */}
           {sponsorships.trim() ? (
-            <Section style={{ marginTop: "20px" }}>
-              <Text style={{ ...sectionLabel, marginTop: 0 }}>
-                Episode sponsorships
+            <Section style={{ marginTop: "40px" }}>
+              <Hr style={{ border: "none", borderTop: `1px solid ${C.rule}`, margin: "0 0 14px" }} />
+              <Text style={{ margin: "0 0 22px" }}>
+                <span style={{ fontSize: "19px", fontWeight: 600, color: C.ink, letterSpacing: "-0.005em" }}>
+                  Episode Sponsors
+                </span>
+                {"  "}
+                <span style={{ fontSize: "12px", color: C.ink4, letterSpacing: "0.02em" }}>
+                  paid placements in this episode
+                </span>
               </Text>
               <SponsorshipEmailLines text={sponsorships} />
             </Section>
           ) : null}
 
-          <Text style={linkRow}>
-            {showSeparateSummaryLink ? (
-              <>
-                <Link
-                  href={listen}
-                  style={{ color: "#F7931A", textDecoration: "underline" }}
-                >
-                  Listen to this episode
-                </Link>
-                {" · "}
-                <Link
-                  href={summaryPage}
-                  style={{ color: "#F7931A", textDecoration: "underline" }}
-                >
-                  Full summary &amp; transcript
-                </Link>
-              </>
-            ) : (
-              <Link
-                href={summaryPage}
-                style={{ color: "#F7931A", textDecoration: "underline" }}
-              >
-                Full summary &amp; transcript
-              </Link>
-            )}
-          </Text>
-
-          <Section>
-            <Text style={sectionLabel}>Key topics</Text>
-            <SummarySectionBody text={keyTopics} />
-
-            <Text style={sectionLabel}>Market &amp; price signals</Text>
-            <SummarySectionBody text={marketSignals} />
-
-            <Text style={sectionLabel}>Actionable insights</Text>
-            <SummarySectionBody text={actionableInsights} />
+          {/* ── Footer ── */}
+          <Section style={{ marginTop: "48px" }}>
+            <Hr style={{ border: "none", borderTop: `1px solid ${C.rule}`, margin: "0 0 18px" }} />
+            <Text style={{ margin: 0, fontSize: "11.5px", lineHeight: "1.6", color: C.ink4 }}>
+              <span>btcpods.xyz · daily summaries, no fluff</span>
+              {unsubscribeUrl ? (
+                <>
+                  {"  "}
+                  <Link href={unsubscribeUrl} style={{ color: C.ink3, textDecoration: "underline" }}>
+                    Unsubscribe
+                  </Link>
+                </>
+              ) : null}
+            </Text>
           </Section>
+
         </Container>
       </Body>
     </Html>
