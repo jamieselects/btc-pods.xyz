@@ -28,8 +28,7 @@ export default async function DashboardPage() {
             Your dashboard
           </h1>
           <p className="max-w-prose text-sm text-muted-foreground">
-            New summaries appear here and in your inbox after each morning&apos;s
-            pipeline run.
+            New summaries appear here and in your inbox after new episodes are released.
           </p>
         </header>
 
