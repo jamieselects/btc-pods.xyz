@@ -27,6 +27,9 @@
 # cursor (local IDE / agent settings)
 .cursor/
 
+# claude (local agent / plugin cache)
+.claude/
+
 # debug
 npm-debug.log*
 yarn-debug.log*

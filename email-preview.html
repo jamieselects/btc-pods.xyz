@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BTC Pod Summaries — Email Preview</title>
+  <style>
+    /* ── Reset ── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    /* ── Page chrome ── */
+    body {
+      background: #1a1a1a;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 40px 16px 80px;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
+        Oxygen-Sans, Ubuntu, Cantarell, sans-serif;
+    }
+
+    .page-label {
+      color: #666;
+      font-size: 11px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      margin-bottom: 20px;
+    }
+
+    /* ── Email shell (matches `main` style) ── */
+    .email-shell {
+      background-color: #0a0a0a;
+      color: #ededed;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
+        Oxygen-Sans, Ubuntu, Cantarell, sans-serif;
+      width: 100%;
+      max-width: 600px;
+      border-radius: 4px;
+      overflow: hidden;
+      box-shadow: 0 8px 40px rgba(0,0,0,0.6);
+    }
+
+    /* ── Container (matches `container` style) ── */
+    .email-container {
+      margin: 0 auto;
+      padding: 32px 24px;
+      max-width: 560px;
+    }
+
+    /* ── Wordmark ── */
+    .wordmark {
+      color: #F7931A;
+      font-family: monospace;
+      font-size: 12px;
+      letter-spacing: 0.12em;
+      margin: 0;
+    }
+
+    /* ── Episode title ── */
+    .episode-title {
+      font-size: 22px;
+      font-weight: 700;
+      color: #ededed;
+      margin: 8px 0 4px;
+      line-height: 1.3;
+    }
+
+    /* ── Podcast name ── */
+    .podcast-name {
+      color: #a1a1a1;
+      font-size: 13px;
+      margin: 0;
+    }
+
+    /* ── Section label (matches `sectionLabel` style) ── */
+    .section-label {
+      color: #F7931A;
+      font-size: 12px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      margin: 24px 0 8px;
+      display: block;
+    }
+    .section-label.first {
+      margin-top: 0;
+    }
+
+    /* ── Link row (matches `linkRow` style) ── */
+    .link-row {
+      color: #ededed;
+      font-size: 14px;
+      line-height: 1.6;
+      margin: 12px 0 0;
+    }
+
+    .link-row a,
+    .sponsorship-line a,
+    .body-text a {
+      color: #F7931A;
+      text-decoration: underline;
+    }
+
+    .link-row .dot {
+      color: #ededed;
+    }
+
+    /* ── Sponsorship lines (matches `lineStyle` in SponsorshipEmailLines) ── */
+    .sponsorship-line {
+      color: #ededed;
+      font-size: 14px;
+      line-height: 1.6;
+      margin: 0 0 8px;
+    }
+
+    /* ── Summary section body (matches `lineStyle` in SummarySectionBody) ── */
+    .body-text {
+      color: #ededed;
+      font-size: 14px;
+      line-height: 1.65;
+      margin: 0 0 6px;
+    }
+
+    .body-text strong {
+      color: #ededed;
+      font-weight: 600;
+    }
+
+    /* ── Divider between variants ── */
+    .variant-divider {
+      border: none;
+      border-top: 1px solid #2a2a2a;
+      margin: 48px 0;
+    }
+
+    .variant-tag {
+      color: #444;
+      font-size: 11px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      margin-bottom: 16px;
+    }
+  </style>
+</head>
+<body>
+
+  <p class="page-label">BTC Pod Summaries — Email Preview</p>
+
+  <!-- ═══════════════════════════════════════════
+       VARIANT A: with sponsorships + two links
+  ═══════════════════════════════════════════ -->
+  <div class="email-shell">
+    <div class="email-container">
+
+      <!-- Wordmark -->
+      <p class="wordmark">₿ BTC POD SUMMARIES</p>
+
+      <!-- Episode heading -->
+      <h1 class="episode-title">Michael Saylor on the Bitcoin Endgame: Nation-State Adoption &amp; the $13M Price Target</h1>
+      <p class="podcast-name">from What Bitcoin Did</p>
+
+      <!-- Sponsorships section -->
+      <div style="margin-top: 20px;">
+        <span class="section-label first">Episode sponsorships</span>
+        <p class="sponsorship-line">This episode is brought to you by <a href="#">Unchained Capital</a> — custody solutions built for Bitcoin-only institutions.</p>
+        <p class="sponsorship-line">Also sponsored by <a href="#">River Financial</a> — buy Bitcoin with zero fees on recurring purchases.</p>
+      </div>
+
+      <!-- Links row (listen + summary) -->
+      <p class="link-row">
+        <a href="#">Listen to this episode</a>
+        <span class="dot"> · </span>
+        <a href="#">Full summary &amp; transcript</a>
+      </p>
+
+      <!-- Content sections -->
+      <div>
+        <span class="section-label">Key topics</span>
+        <p class="body-text"><strong>Bitcoin as monetary infrastructure:</strong> Saylor argues BTC is not an investment but the foundation of a global digital capital network, inevitable for any sovereign treasury.</p>
+        <p class="body-text"><strong>Nation-state competition:</strong> Once one G20 country accumulates a strategic reserve, others face a prisoner's dilemma — forced adoption or permanent debasement disadvantage.</p>
+        <p class="body-text">The Lightning Network and layer-2 ecosystem evolve from payment rails into programmable capital channels, enabling sub-cent micropayments at scale.</p>
+        <p class="body-text"><strong>21 million cap as constitution:</strong> Fixed supply isn't a feature — it's the entire value proposition. Any "upgrade" proposal is political capture, not technical improvement.</p>
+
+        <span class="section-label">Market &amp; price signals</span>
+        <p class="body-text">Saylor's $13M per BTC target is derived from total global wealth (~$900T) converging onto a 21M-coin supply over a 100-year horizon — ~4.3% CAGR from current levels.</p>
+        <p class="body-text"><strong>Short-term catalyst:</strong> US Strategic Bitcoin Reserve bill reintroduction expected Q3 2025; passage would trigger immediate sovereign FOMO buying across allied nations.</p>
+        <p class="body-text">MicroStrategy's convertible-note model continues to outperform equity benchmarks — BTC-per-share NAV up 340% since initial purchase; institutional replication accelerating.</p>
+
+        <span class="section-label">Actionable insights</span>
+        <p class="body-text"><strong>Stack &amp; hold:</strong> Dollar-cost averaging into cold storage remains the highest Sharpe-ratio strategy for retail allocators over 4-year time horizons, per Saylor's model.</p>
+        <p class="body-text">Watch for the US Treasury's Q3 comment period on a Strategic Reserve proposal — a positive signal would be the single highest-conviction buy trigger in this cycle.</p>
+        <p class="body-text"><strong>Avoid leverage:</strong> Saylor explicitly warns that 3× leveraged BTC products expose holders to volatility wipeouts that preclude participation in the eventual parabolic move.</p>
+        <p class="body-text">Consider corporate treasury exposure via MSTR as a proxy if direct custody is operationally difficult — though self-custody remains the only way to hold actual BTC.</p>
+      </div>
+
+    </div>
+  </div>
+
+  <hr class="variant-divider" />
+
+  <!-- ═══════════════════════════════════════════
+       VARIANT B: no sponsorships, one link only
+  ═══════════════════════════════════════════ -->
+  <p class="variant-tag">Variant — no sponsorships, single link</p>
+  <div class="email-shell">
+    <div class="email-container">
+
+      <p class="wordmark">₿ BTC POD SUMMARIES</p>
+      <h1 class="episode-title">The Halving Aftermath: What On-Chain Data Says About the Next 18 Months</h1>
+      <p class="podcast-name">from Bitcoin Fundamentals (Preston Pysh)</p>
+
+      <!-- Single link row (listenUrl === episodeUrl) -->
+      <p class="link-row">
+        <a href="#">Full summary &amp; transcript</a>
+      </p>
+
+      <div>
+        <span class="section-label">Key topics</span>
+        <p class="body-text"><strong>Post-halving supply shock:</strong> New issuance dropped to 3.125 BTC/block; miner sell-pressure has historically peaked 60–90 days post-halving before reversing.</p>
+        <p class="body-text">HODL waves show 70% of supply unmoved for 1+ year — historically a precursor to price discovery phases as available float contracts sharply.</p>
+
+        <span class="section-label">Market &amp; price signals</span>
+        <p class="body-text"><strong>MVRV Z-Score:</strong> Currently at 2.1 — well below the 7+ readings seen at prior cycle peaks. Suggests significant upside before overheated territory.</p>
+        <p class="body-text">Exchange BTC reserves hit a 5-year low of 2.3M BTC; reduced liquid supply amplifies price sensitivity to demand shocks.</p>
+
+        <span class="section-label">Actionable insights</span>
+        <p class="body-text">Pysh recommends monitoring the Puell Multiple weekly — a reading above 4 historically marks the optimal start of a DCA pause / partial-take-profit window.</p>
+        <p class="body-text"><strong>Time horizon matters:</strong> Investors with &lt;12-month windows face asymmetric volatility risk; the thesis is strongest for 3–5 year hold periods aligned with halving cycles.</p>
+      </div>
+
+    </div>
+  </div>
+
+</body>
+</html>
