@@ -38,7 +38,7 @@ export function PodcastCard({
               alt={`${name} cover art`}
               fill
               className="object-cover transition group-hover:opacity-95"
-              sizes="(min-width: 1024px) 25vw, 50vw"
+              sizes="(min-width: 1024px) 25vw, (min-width: 640px) 50vw, 45vw"
             />
           ) : (
             <div className="flex h-full w-full items-center justify-center font-mono text-2xl text-muted-foreground">
@@ -46,20 +46,22 @@ export function PodcastCard({
             </div>
           )}
         </div>
-        <div className="flex flex-col gap-2 p-4">
-          <h3 className="font-semibold leading-tight group-hover:text-primary">
+        <div className="flex flex-col gap-1.5 p-2.5 sm:gap-2 sm:p-4">
+          <h3 className="line-clamp-2 text-sm font-semibold leading-tight group-hover:text-primary sm:text-base">
             {name}
           </h3>
-          <p className="text-sm text-muted-foreground line-clamp-2">{tagline}</p>
+          <p className="hidden text-sm text-muted-foreground line-clamp-2 sm:block">
+            {tagline}
+          </p>
           {hostNames?.length ? (
-            <p className="font-mono text-xs text-muted-foreground">
+            <p className="hidden font-mono text-xs text-muted-foreground sm:block">
               {hostNames.join(" · ")}
             </p>
           ) : null}
         </div>
       </Link>
       {subscribe ? (
-        <div className="border-t border-border px-4 pb-4 pt-3">
+        <div className="border-t border-border px-2.5 pb-2.5 pt-2 sm:px-4 sm:pb-4 sm:pt-3">
           <SubscribeButton
             key={`${subscribe.podcastId}-${subscribe.initialSubscribed}`}
             podcastId={subscribe.podcastId}
