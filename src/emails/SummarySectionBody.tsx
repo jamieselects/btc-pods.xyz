@@ -1,44 +1,66 @@
-import { Fragment, type ReactNode } from "react";
+import { Fragment } from "react";
 import { Text } from "@react-email/components";
 
-const lineStyle = {
-  color: "#ededed",
-  fontSize: "14px",
-  lineHeight: "1.65",
-  margin: "0 0 6px",
+const C = {
+  ink: "#ededed",
+  ink2: "#c8c6bf",
+  accent: "#F7931A",
 } as const;
 
-/** Turn `**phrase**` into `<strong>` for HTML email; plain-text render drops the asterisks. */
-function inlineWithBold(line: string): ReactNode[] {
-  const parts = line.split(/(\*\*[^*]+\*\*)/g);
-  return parts.map((part, i) => {
-    const m = part.match(/^\*\*([^*]+)\*\*$/);
-    if (m) {
-      return (
-        <strong key={i} style={{ color: "#ededed", fontWeight: 600 }}>
-          {m[1]}
-        </strong>
-      );
-    }
-    return <Fragment key={i}>{part}</Fragment>;
-  });
+const lineStyle = {
+  color: C.ink2,
+  fontSize: "15px",
+  lineHeight: "1.6",
+  margin: "0 0 14px",
+} as const;
+
+/**
+ * If a line starts with `**phrase**` (or `**phrase**:`), treat it as the lead —
+ * rendered bold in ink color. The remainder is rendered in ink-2. Lines without
+ * a bold lead are rendered entirely in ink-2.
+ */
+function parseLine(line: string): { lead: string | null; body: string } {
+  const m = line.match(/^\*\*([^*]+)\*\*[:\s]*([\s\S]*)/);
+  if (m) return { lead: m[1], body: m[2].trim() };
+  return { lead: null, body: line };
 }
 
 /**
- * One `<Text>` per line so clients that ignore `white-space: pre-line` still show breaks
- * (e.g. Spark when preferring a text/heuristic layout).
+ * Renders each non-empty line as a list item with an em-dash marker.
+ * Bold leads (via `**phrase**`) are extracted and shown in ink; body text in ink-2.
  */
 export function SummarySectionBody({ text }: { text: string }) {
-  const normalized = text.replace(/\r\n/g, "\n").trimEnd();
-  const lines = normalized.length > 0 ? normalized.split("\n") : [""];
+  const lines = text
+    .replace(/\r\n/g, "\n")
+    .trimEnd()
+    .split("\n")
+    .filter((l) => l.trim().length > 0);
+
+  if (lines.length === 0) return null;
 
   return (
     <>
-      {lines.map((line, idx) => (
-        <Text key={idx} style={{ ...lineStyle, marginTop: idx === 0 ? 0 : 0 }}>
-          {inlineWithBold(line)}
-        </Text>
-      ))}
+      {lines.map((line, idx) => {
+        const { lead, body } = parseLine(line);
+        return (
+          <Text key={idx} style={{ ...lineStyle, marginTop: 0 }}>
+            <span style={{ color: C.accent, fontWeight: 500 }}>— </span>
+            {lead ? (
+              <>
+                <strong style={{ color: C.ink, fontWeight: 600 }}>{lead}</strong>
+                {body ? (
+                  <Fragment>
+                    {". "}
+                    <span style={{ color: C.ink2 }}>{body}</span>
+                  </Fragment>
+                ) : null}
+              </>
+            ) : (
+              <span style={{ color: C.ink2 }}>{line}</span>
+            )}
+          </Text>
+        );
+      })}
     </>
   );
 }
