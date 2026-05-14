@@ -11,15 +11,16 @@ export async function SiteHeader() {
 
   return (
     <header className="border-b border-border/60 bg-background/60 backdrop-blur">
-      <div className="mx-auto flex h-14 w-full max-w-6xl items-center justify-between px-6">
+      <div className="mx-auto flex w-full max-w-6xl flex-col gap-2 px-4 py-3 sm:h-14 sm:flex-row sm:items-center sm:justify-between sm:px-6 sm:py-0">
         <Link
           href="/"
-          className="font-mono text-sm uppercase tracking-widest text-primary"
+          className="font-mono text-xs uppercase tracking-widest text-primary sm:text-sm"
         >
-          ₿ BTC Pod Summaries
+          <span className="sm:hidden">₿ BTC Pods</span>
+          <span className="hidden sm:inline">₿ BTC Pod Summaries</span>
         </Link>
 
-        <nav className="flex items-center gap-1">
+        <nav className="flex w-full flex-wrap items-center gap-1 sm:w-auto sm:flex-nowrap">
           {donationsEnabled ? (
             <DonateButton triggerLabel="Pay what you can" />
           ) : null}

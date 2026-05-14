@@ -23,13 +23,16 @@ export function SummaryCard({
   return (
     <Link
       href={`/episodes/${episodeId}`}
-      className="flex flex-col gap-2 rounded-lg border border-border bg-card p-5 text-card-foreground transition hover:border-primary/40"
+      className="flex min-w-0 flex-col gap-2 rounded-lg border border-border bg-card p-5 text-card-foreground transition hover:border-primary/40"
     >
-      <div className="flex items-center justify-between gap-2">
-        <span className="font-mono text-xs uppercase tracking-wider text-primary">
+      <div className="flex min-w-0 items-center justify-between gap-2">
+        <span className="min-w-0 truncate font-mono text-xs uppercase tracking-wider text-primary">
           {podcastName}
         </span>
-        <time className="font-mono text-xs text-muted-foreground" dateTime={String(publishedAt)}>
+        <time
+          className="shrink-0 font-mono text-xs text-muted-foreground"
+          dateTime={String(publishedAt)}
+        >
           {dateStr}
         </time>
       </div>
