@@ -26,6 +26,14 @@ function parseLine(line: string): { lead: string | null; body: string } {
 }
 
 /**
+ * Remove a single normalized markdown bullet (`- ` or `* `) before parsing
+ * bold leads. We render our own orange marker in the email template.
+ */
+function stripBulletPrefix(line: string): string {
+  return line.trimStart().replace(/^[-*]\s+/, "").trimStart();
+}
+
+/**
  * Renders each non-empty line as a list item with an em-dash marker.
  * Bold leads (via `**phrase**`) are extracted and shown in ink; body text in ink-2.
  */
@@ -41,7 +49,8 @@ export function SummarySectionBody({ text }: { text: string }) {
   return (
     <>
       {lines.map((line, idx) => {
-        const { lead, body } = parseLine(line);
+        const normalized = stripBulletPrefix(line);
+        const { lead, body } = parseLine(normalized);
         return (
           <Text key={idx} style={{ ...lineStyle, marginTop: 0 }}>
             <span style={{ color: C.accent, fontWeight: 500 }}>— </span>
@@ -56,7 +65,7 @@ export function SummarySectionBody({ text }: { text: string }) {
                 ) : null}
               </>
             ) : (
-              <span style={{ color: C.ink2 }}>{line}</span>
+              <span style={{ color: C.ink2 }}>{normalized}</span>
             )}
           </Text>
         );

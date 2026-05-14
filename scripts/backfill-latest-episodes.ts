@@ -64,6 +64,7 @@ async function main() {
   const lookbackDays = Number(process.env.LOOKBACK_DAYS) || 400;
   const maxPerRun = Number(process.env.MAX_PER_RUN) || 3;
   const appBaseUrl =
+    process.env.APP_BASE_URL?.replace(/\/$/, "") ||
     process.env.NEXT_PUBLIC_APP_URL?.replace(/\/$/, "") ||
     "http://localhost:3000";
 

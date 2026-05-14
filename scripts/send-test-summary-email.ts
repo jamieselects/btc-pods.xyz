@@ -5,7 +5,7 @@
  *   npx tsx scripts/send-test-summary-email.ts [to@email.com] [appBaseUrl]
  *
  * Requires .env.local: NEXT_PUBLIC_SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY,
- * RESEND_API_KEY, RESEND_FROM_EMAIL.
+ * RESEND_API_KEY, RESEND_FROM_EMAIL (optional RESEND_FROM_NAME).
  */
 import { loadEnvConfig } from "@next/env";
 
@@ -15,6 +15,7 @@ loadEnvConfig(process.cwd(), true);
 const TEST_EMAIL = process.argv[2] ?? "jamie@jamieselects.com";
 const APP_BASE =
   process.argv[3] ??
+  process.env.APP_BASE_URL ??
   process.env.NEXT_PUBLIC_APP_URL ??
   "https://btcpods.xyz";
 

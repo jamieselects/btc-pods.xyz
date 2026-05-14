@@ -18,6 +18,20 @@ function stripMarkdownBold(s: string): string {
   return out.replace(/\*\*/g, "");
 }
 
+/**
+ * Models sometimes emit mixed bullet prefixes like `— - ` or `• * `.
+ * Canonicalize any bullet-prefixed line to `- ` so web/email renderers can
+ * parse it consistently.
+ */
+function normalizeBulletPrefix(line: string): string {
+  const trimmed = line.trimStart();
+  if (!trimmed) return line;
+  const hasBulletPrefix = /^(?:[—–•]|[-*])\s+/.test(trimmed);
+  if (!hasBulletPrefix) return line;
+  const body = trimmed.replace(/^(?:(?:[—–•]|[-*])\s*)+/, "").trimStart();
+  return body ? `- ${body}` : "";
+}
+
 /** Lines that are only a section title (no body on that line). */
 function isStandaloneSectionHeaderLine(line: string): boolean {
   const t = line.trim();
@@ -69,6 +83,11 @@ export function cleanSectionBody(raw: string, kind: SectionKind): string {
     .trim();
   s = s.replace(/\s+#{1,6}\s*\d+\.?\s*$/m, "").trim();
   s = s.replace(/^\s*#{1,6}\s*\d+\.?\s*$/gm, "").trim();
+  s = s
+    .split("\n")
+    .map((line) => normalizeBulletPrefix(line))
+    .join("\n")
+    .trim();
   s = s.replace(/\n{3,}/g, "\n\n");
   if (kind === "sponsor") {
     s = stripMarkdownBold(s);
