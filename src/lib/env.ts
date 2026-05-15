@@ -18,6 +18,7 @@ const serverSchema = z.object({
   ANTHROPIC_API_KEY: z.string().min(1).optional(),
 
   RESEND_API_KEY: z.string().min(1).optional(),
+  RESEND_FROM_NAME: z.string().min(1).optional(),
   RESEND_FROM_EMAIL: z.string().email().optional(),
 
   STRIKE_API_KEY: z.string().min(1).optional(),
@@ -25,6 +26,12 @@ const serverSchema = z.object({
 
   NEXT_PUBLIC_POSTHOG_KEY: z.string().min(1).optional(),
   NEXT_PUBLIC_POSTHOG_HOST: z.string().url().optional(),
+  NEXT_PUBLIC_APP_URL: z.string().url().optional(),
+  NEXT_PUBLIC_FORCE_GOOGLE_AUTH: z
+    .enum(["true", "false"])
+    .optional(),
+
+  APP_BASE_URL: z.string().url().optional(),
 
   CRON_SECRET: z.string().min(8).default("dev-cron-secret-change-me"),
 });

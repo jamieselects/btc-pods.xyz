@@ -54,7 +54,10 @@ export async function handleProcessEpisodesCron(
     maxPerRunParam !== null && maxPerRunParam !== ""
       ? Number(maxPerRunParam) || undefined
       : undefined;
-  const appBaseUrl = `${url.protocol}//${url.host}`;
+  const appBaseUrl =
+    env.APP_BASE_URL?.replace(/\/$/, "") ||
+    env.NEXT_PUBLIC_APP_URL?.replace(/\/$/, "") ||
+    `${url.protocol}//${url.host}`;
 
   const db = createServiceClient();
 

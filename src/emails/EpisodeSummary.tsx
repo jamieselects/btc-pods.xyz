@@ -57,7 +57,6 @@ export function EpisodeSummary({
 }: EpisodeSummaryProps) {
   const listen = (listenUrl?.trim() || episodeUrl).trim();
   const summaryPage = episodeUrl.trim();
-  const showListenLink = listen !== summaryPage;
   const podcastSlug = slugify(podcastName);
 
   return (
@@ -108,29 +107,27 @@ export function EpisodeSummary({
                 textDecoration: "none",
                 display: "inline-block",
                 letterSpacing: "0.01em",
-                marginRight: showListenLink ? "8px" : "0",
+                marginRight: "8px",
               }}
             >
-              {showListenLink ? "Listen ↗" : "Full summary & transcript"}
+              Listen ↗
             </Link>
-            {showListenLink ? (
-              <Link
-                href={summaryPage}
-                style={{
-                  color: C.ink2,
-                  border: `1px solid ${C.rule}`,
-                  padding: "8px 14px",
-                  borderRadius: "999px",
-                  fontSize: "13px",
-                  fontWeight: 500,
-                  textDecoration: "none",
-                  display: "inline-block",
-                  letterSpacing: "0.01em",
-                }}
-              >
-                Full summary &amp; transcript
-              </Link>
-            ) : null}
+            <Link
+              href={summaryPage}
+              style={{
+                color: C.ink2,
+                border: `1px solid ${C.rule}`,
+                padding: "8px 14px",
+                borderRadius: "999px",
+                fontSize: "13px",
+                fontWeight: 500,
+                textDecoration: "none",
+                display: "inline-block",
+                letterSpacing: "0.01em",
+              }}
+            >
+              Full summary &amp; transcript
+            </Link>
           </Text>
 
           {/* ── Section: Key topics ── */}
@@ -146,14 +143,19 @@ export function EpisodeSummary({
           {sponsorships.trim() ? (
             <Section style={{ marginTop: "40px" }}>
               <Hr style={{ border: "none", borderTop: `1px solid ${C.rule}`, margin: "0 0 14px" }} />
-              <Text style={{ margin: "0 0 22px" }}>
-                <span style={{ fontSize: "19px", fontWeight: 600, color: C.ink, letterSpacing: "-0.005em" }}>
-                  Episode Sponsors
-                </span>
-                {"  "}
-                <span style={{ fontSize: "12px", color: C.ink4, letterSpacing: "0.02em" }}>
-                  paid placements in this episode
-                </span>
+              <Text
+                style={{
+                  margin: "0 0 8px",
+                  fontSize: "19px",
+                  fontWeight: 600,
+                  color: C.ink,
+                  letterSpacing: "-0.005em",
+                }}
+              >
+                Episode Sponsors
+              </Text>
+              <Text style={{ margin: "0 0 22px", fontSize: "12px", color: C.ink4, lineHeight: "1.5" }}>
+                Paid placements in this episode. Support the show by checking out their sponsors!
               </Text>
               <SponsorshipEmailLines text={sponsorships} />
             </Section>

@@ -60,6 +60,9 @@ export async function sendDigest({
   if (!env.RESEND_FROM_EMAIL) throw new Error("RESEND_FROM_EMAIL is not set.");
 
   const resend = new Resend(env.RESEND_API_KEY);
+  const from = env.RESEND_FROM_NAME?.trim()
+    ? `${env.RESEND_FROM_NAME.trim()} <${env.RESEND_FROM_EMAIL}>`
+    : env.RESEND_FROM_EMAIL;
 
   const emailProps = {
     ...payload,
@@ -80,7 +83,7 @@ export async function sendDigest({
 
     try {
       const result = await resend.emails.send({
-        from: env.RESEND_FROM_EMAIL,
+        from,
         to: r.email,
         subject,
         html,
