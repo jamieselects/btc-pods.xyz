@@ -27,6 +27,9 @@ const serverSchema = z.object({
   NEXT_PUBLIC_POSTHOG_KEY: z.string().min(1).optional(),
   NEXT_PUBLIC_POSTHOG_HOST: z.string().url().optional(),
   NEXT_PUBLIC_APP_URL: z.string().url().optional(),
+  NEXT_PUBLIC_FORCE_GOOGLE_AUTH: z
+    .enum(["true", "false"])
+    .optional(),
 
   APP_BASE_URL: z.string().url().optional(),
 
