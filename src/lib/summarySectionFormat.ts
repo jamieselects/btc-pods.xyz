@@ -19,6 +19,27 @@ function stripMarkdownBold(s: string): string {
 }
 
 /**
+ * Remove unmatched `**` markers while preserving valid bold pairs.
+ * Models occasionally emit an orphan trailing marker (e.g. `topic**:`).
+ */
+function stripOrphanBoldMarkers(s: string): string {
+  return s
+    .split("\n")
+    .map((line) => {
+      let out = line;
+      while (true) {
+        const markers = [...out.matchAll(/\*\*/g)];
+        if (markers.length % 2 === 0) break;
+        const lastIdx = markers.at(-1)?.index;
+        if (lastIdx === undefined) break;
+        out = `${out.slice(0, lastIdx)}${out.slice(lastIdx + 2)}`;
+      }
+      return out;
+    })
+    .join("\n");
+}
+
+/**
  * Models sometimes emit mixed bullet prefixes like `— - ` or `• * `.
  * Canonicalize any bullet-prefixed line to `- ` so web/email renderers can
  * parse it consistently.
@@ -88,6 +109,7 @@ export function cleanSectionBody(raw: string, kind: SectionKind): string {
     .map((line) => normalizeBulletPrefix(line))
     .join("\n")
     .trim();
+  s = stripOrphanBoldMarkers(s);
   s = s.replace(/\n{3,}/g, "\n\n");
   if (kind === "sponsor") {
     s = stripMarkdownBold(s);

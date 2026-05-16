@@ -18,6 +18,7 @@ const BATCH_DEFAULT_MAX_EPISODES_PER_PODCAST = 1;
  * stays under long Whisper + ffmpeg + Haiku budgets on Vercel.
  */
 const SINGLE_SHOW_DEFAULT_MAX_EPISODES = 1;
+const DEFAULT_APP_BASE_URL = "https://www.btcpods.xyz";
 
 export type ProcessEpisodesCronContext = {
   /** When set, only this podcast row is loaded (must be active). */
@@ -57,7 +58,7 @@ export async function handleProcessEpisodesCron(
   const appBaseUrl =
     env.APP_BASE_URL?.replace(/\/$/, "") ||
     env.NEXT_PUBLIC_APP_URL?.replace(/\/$/, "") ||
-    `${url.protocol}//${url.host}`;
+    DEFAULT_APP_BASE_URL;
 
   const db = createServiceClient();
 

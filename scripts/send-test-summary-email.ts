@@ -17,7 +17,7 @@ const APP_BASE =
   process.argv[3] ??
   process.env.APP_BASE_URL ??
   process.env.NEXT_PUBLIC_APP_URL ??
-  "https://btcpods.xyz";
+  "https://www.btcpods.xyz";
 
 async function main() {
   const { createClient } = await import("@supabase/supabase-js");
