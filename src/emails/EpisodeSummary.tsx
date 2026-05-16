@@ -55,8 +55,10 @@ export function EpisodeSummary({
   sponsorships,
   unsubscribeUrl,
 }: EpisodeSummaryProps) {
-  const listen = (listenUrl?.trim() || episodeUrl).trim();
   const summaryPage = episodeUrl.trim();
+  const listenCandidate = listenUrl?.trim() || null;
+  const listen =
+    listenCandidate && listenCandidate !== summaryPage ? listenCandidate : null;
   const podcastSlug = slugify(podcastName);
 
   return (
@@ -95,23 +97,25 @@ export function EpisodeSummary({
 
           {/* ── Pill CTAs ── */}
           <Text style={{ margin: "0 0 0" }}>
-            <Link
-              href={listen}
-              style={{
-                background: C.accent,
-                color: C.accentOn,
-                padding: "8px 14px",
-                borderRadius: "999px",
-                fontSize: "13px",
-                fontWeight: 500,
-                textDecoration: "none",
-                display: "inline-block",
-                letterSpacing: "0.01em",
-                marginRight: "8px",
-              }}
-            >
-              Listen ↗
-            </Link>
+            {listen ? (
+              <Link
+                href={listen}
+                style={{
+                  background: C.accent,
+                  color: C.accentOn,
+                  padding: "8px 14px",
+                  borderRadius: "999px",
+                  fontSize: "13px",
+                  fontWeight: 500,
+                  textDecoration: "none",
+                  display: "inline-block",
+                  letterSpacing: "0.01em",
+                  marginRight: "8px",
+                }}
+              >
+                Listen ↗
+              </Link>
+            ) : null}
             <Link
               href={summaryPage}
               style={{

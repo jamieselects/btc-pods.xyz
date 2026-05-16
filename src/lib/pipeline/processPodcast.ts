@@ -251,7 +251,7 @@ async function processEpisode(
           podcastName: podcast.name,
           episodeTitle: item.title,
           episodeUrl: `${appBaseUrl}/episodes/${episodeRow.id}`,
-          listenUrl: item.link?.trim() || null,
+          listenUrl: item.link?.trim() || item.audioUrl?.trim() || null,
           keyTopics: summary.keyTopics,
           marketSignals: summary.marketSignals,
           actionableInsights: summary.actionableInsights,
